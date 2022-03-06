@@ -1,0 +1,134 @@
+Here is the report from Line and Memory profiler and the conclusion:
+
+$ kernprof -l -v ~/Moein_python/euler.py
+30397485.0
+Wrote profile results to euler.py.lprof
+Timer unit: 1e-06 s
+
+Total time: 0.009569 s
+File: /Users/moein/Moein_python/euler.py
+Function: gen_primes at line 4
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+     4                                           @profile
+     5                                           def gen_primes(n):
+     6         1         12.0     12.0      0.1      l = range(2,n)
+     7         1          2.0      2.0      0.0      primes = []
+     8       999        538.0      0.5      5.6      for j in range(0,len(l)):
+     9       998        484.0      0.5      5.1          p = True
+    10      2968       1536.0      0.5     16.1          for d in primes:
+    11      2967       2972.0      1.0     31.1              if(d > sqrt(l[j])):
+    12       167        101.0      0.6      1.1                  break
+    13      2800       2373.0      0.8     24.8              if(l[j] % d == 0):
+    14       830        431.0      0.5      4.5                  p = False
+    15       830        426.0      0.5      4.5                  break;
+    16       998        530.0      0.5      5.5          if(p):
+    17       168        164.0      1.0      1.7              primes.append(l[j])
+    18                                           
+    19         1          0.0      0.0      0.0      return primes
+
+Total time: 0.139816 s
+File: /Users/moein/Moein_python/euler.py
+Function: factorize at line 21
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    21                                           @profile
+    22                                           def factorize(n,primes):
+    23      9999       2341.0      0.2      1.7      factors = []
+    24      9999       2743.0      0.3      2.0      init_n = n
+    25     96347      26243.0      0.3     18.8      for p in primes:
+    26    118736      41639.0      0.4     29.8          while(n%p == 0):
+    27     22389       6803.0      0.3      4.9              n = n/p
+    28     22389       8466.0      0.4      6.1              factors.append(p)
+    29     96347      39264.0      0.4     28.1          if(p > sqrt(n)):
+    30      9999       2796.0      0.3      2.0              break
+    31      9999       3140.0      0.3      2.2      if(n > 1):
+    32      9596       3794.0      0.4      2.7          factors.append(n)
+    33      9999       2587.0      0.3      1.9      return factors
+
+Total time: 0.276879 s
+File: /Users/moein/Moein_python/euler.py
+Function: fast_phi at line 50
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    50                                           @profile
+    51                                           def fast_phi(n,primes):
+    52      9999     238917.0     23.9     86.3      factors = factorize(n,primes)
+    53      9999       3723.0      0.4      1.3      phi = factors[0]-1
+    54     31985      12338.0      0.4      4.5      for i in range(1,len(factors)):
+    55     21986       9342.0      0.4      3.4          if(factors[i] == factors[i-1]):
+    56      7685       4545.0      0.6      1.6              phi *= (factors[i]-1)*(factors[i])/(factors[i]-1)
+    57                                                   else:
+    58     14301       5552.0      0.4      2.0              phi *= (factors[i]-1)
+    59      9999       2462.0      0.2      0.9      return phi
+
+
+
+
+
+
+
+
+(base) Moeins-MBP:~ moein$ python -m memory_profiler ~/Moein_python/euler.py
+30397485.0
+Filename: /Users/moein/Moein_python/euler.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+     4   37.414 MiB   37.414 MiB           1   @profile
+     5                                         def gen_primes(n):
+     6   37.414 MiB    0.000 MiB           1       l = range(2,n)
+     7   37.414 MiB    0.000 MiB           1       primes = []
+     8   37.422 MiB    0.000 MiB         999       for j in range(0,len(l)):
+     9   37.422 MiB    0.000 MiB         998           p = True
+    10   37.422 MiB    0.000 MiB        2968           for d in primes:
+    11   37.422 MiB    0.000 MiB        2967               if(d > sqrt(l[j])):
+    12   37.422 MiB    0.000 MiB         167                   break
+    13   37.422 MiB    0.000 MiB        2800               if(l[j] % d == 0):
+    14   37.422 MiB    0.004 MiB         830                   p = False
+    15   37.422 MiB    0.000 MiB         830                   break;
+    16   37.422 MiB    0.004 MiB         998           if(p):
+    17   37.422 MiB    0.000 MiB         168               primes.append(l[j])
+    18                                         
+    19   37.422 MiB    0.000 MiB           1       return primes
+
+
+Filename: /Users/moein/Moein_python/euler.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    21   37.441 MiB 374351.281 MiB        9999   @profile
+    22                                         def factorize(n,primes):
+    23   37.441 MiB    0.000 MiB        9999       factors = []
+    24   37.441 MiB    0.000 MiB        9999       init_n = n
+    25   37.441 MiB    0.000 MiB       96347       for p in primes:
+    26   37.441 MiB    0.000 MiB      118736           while(n%p == 0):
+    27   37.441 MiB    0.000 MiB       22389               n = n/p
+    28   37.441 MiB    0.000 MiB       22389               factors.append(p)
+    29   37.441 MiB    0.000 MiB       96347           if(p > sqrt(n)):
+    30   37.441 MiB    0.000 MiB        9999               break
+    31   37.441 MiB    0.000 MiB        9999       if(n > 1):
+    32   37.441 MiB    0.000 MiB        9596           factors.append(n)
+    33   37.441 MiB    0.000 MiB        9999       return factors
+
+
+Filename: /Users/moein/Moein_python/euler.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    50   37.441 MiB   37.434 MiB        9999   @profile
+    51                                         def fast_phi(n,primes):
+    52   37.441 MiB 374351.281 MiB        9999       factors = factorize(n,primes)
+    53   37.441 MiB    0.000 MiB        9999       phi = factors[0]-1
+    54   37.441 MiB    0.000 MiB       31985       for i in range(1,len(factors)):
+    55   37.441 MiB    0.000 MiB       21986           if(factors[i] == factors[i-1]):
+    56   37.441 MiB    0.000 MiB        7685               phi *= (factors[i]-1)*(factors[i])/(factors[i]-1)
+    57                                                 else:
+    58   37.441 MiB    0.000 MiB       14301               phi *= (factors[i]-1)
+    59   37.441 MiB    0.008 MiB        9999       return phi
+
+
+Obviously Line 52 is creating the most memory and is taking the longest to execute. Hence, I would investigate that for performance enhancement. 
